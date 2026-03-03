@@ -1,112 +1,34 @@
 import os
 import requests
-import psycopg
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template, request
 from dotenv import load_dotenv
 
-# Load environment variables from .env
-load_dotenv()
+# 1. Initialize the Flask app
 app = Flask(__name__)
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
-WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"
+load_dotenv()
+API_KEY = os.getenv("OMDB_API_KEY")
 
 
-# -----------------------------
-# DATABASE FUNCTIONS
-# -----------------------------
-def get_cities():
-    with psycopg.connect(DATABASE_URL, sslmode="require") as conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT name FROM cities;")
-            rows = cur.fetchall()
-    return [r[0] for r in rows]
+@app.route('/')
+def home():
+    # This is the "Homepage"
+    return "<h1>Movie API is running!</h1><p>Add /search?t=Inception to the URL to test.</p>"
 
 
-# -----------------------------
-# WEATHER API FUNCTION
-# -----------------------------
-def get_weather(city):
-    try:
-        r = requests.get(
-            WEATHER_URL,
-            params={
-                "q": city,
-                "appid": WEATHER_API_KEY,
-                "units": "metric"
-            },
-            timeout=5
-        )
+@app.route('/search')
+def search():
+    title = request.args.get('t')
 
-        data = r.json()
+    if not title:
+        return {"error": "No title provided"}, 400
 
-        if r.status_code != 200:
-            return {"city": city, "error": data}
+    url = f"http://www.omdbapi.com/?t={title}&apikey={API_KEY}"
+    response = requests.get(url)
 
-        return {
-            "city": city,
-            "temperature": data["main"]["temp"],
-            "conditions": data["weather"][0]["description"]
-        }
-
-    except requests.RequestException as e:
-        return {
-            "city": city,
-            "error": str(e)
-        }
+    return response.json()
 
 
-# -----------------------------
-# ROUTES
-# -----------------------------
-
-@app.route("/")
-def index():
-    try:
-        cities = get_cities()
-        results = [get_weather(city) for city in cities]
-        return render_template("index.html", results=results)
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/weather")
-def weather_json():
-    try:
-        cities = get_cities()
-        results = [get_weather(city) for city in cities]
-        return jsonify(results)
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/health")
-def health():
-    try:
-        # Check DB
-        get_cities()
-
-        # Check external API
-        requests.get(
-            WEATHER_URL,
-            params={
-                "q": "London",
-                "appid": WEATHER_API_KEY
-            },
-            timeout=5
-        )
-
-        return {"status": "ok"}
-
-    except Exception as e:
-        return {"status": "unhealthy", "error": str(e)}, 500
-
-
-# -----------------------------
-# RUN
-# -----------------------------
+# This part allows you to run it directly from PyCharm
 if __name__ == "__main__":
     app.run(debug=True)
