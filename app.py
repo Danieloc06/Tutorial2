@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 
 load_dotenv()
-API_KEY = os.getenv("OMDB_API_KEY")
+API_KEY = os.getenv("API_KEY")
 
 
 @app.route('/')
