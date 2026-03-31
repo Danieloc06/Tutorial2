@@ -1,6 +1,5 @@
 import os
 import requests
-import psycopg2
 import time
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
