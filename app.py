@@ -3,13 +3,14 @@ import requests
 import time
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
-import psycopg2.extras
+import psycopg
+from psycopg.rows import dict_row
 
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 def get_conn():
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    conn = psycopg.connect(DATABASE_URL, sslmode='require')
     return conn
 
 # 1. Initialize the Flask app
@@ -113,7 +114,7 @@ def insert_movie(data):
 @app.route('/view/')
 def view():
     conn = get_conn()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = conn.cursor(row_factory=dict_row)
     cur.execute('SELECT * FROM unnormalised_movie')
     unnormalised_movie = cur.fetchall()
     conn.close()
