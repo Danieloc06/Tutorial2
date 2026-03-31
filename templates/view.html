@@ -1,0 +1,25 @@
+<html>
+<body>
+<h1>View Movie</h1>
+
+{% for movie in unnormalised_movie %}
+<div class="post">
+    <h2>Title: {{ movie['movie_title'] }}</h2>
+    <p>ID: {{ movie['id'] }}</p>
+    <p>Ratings: {{ movie['movie_rated'] }}</p>
+    <p>Release Date: {{ movie['movie_released'] }}</p>
+    <p>Runtime: {{ movie['movie_runtime'] }}</p>
+    <p>Genre: {{ movie['movie_genres'] }}</p>
+    <p>Director: {{ movie['movie_directors'] }}</p>
+    <p>Actors: {{ movie['movie_actors'] }}</p>
+    <p>Plot: {{ movie['movie_plot'] }}</p>
+    <p>Poster Link: {{ movie['movie_poster'] }}</p>
+    <p>IMDB Rating: {{ movie['movie_imdb_rating'] }}</p>
+    <p>IMDB ID: {{ movie['movie_imdb_id'] }}</p>
+    <p>Box Office Revenue: {{ movie['movie_box_office'] }}</p>
+    <p>Writers: {{ movie['movie_writers'] }}</p>
+    <p>Database Entry Timestamp: {{ movie['created_at'] }}</p>
+</div>
+{% endfor %}
+</body>
+</html>
