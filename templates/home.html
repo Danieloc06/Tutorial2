@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+{% block content %}
 <body>
 <ul>
     <li><a class="dropdown-item" href="{{ url_for('index') }}">Search Movie</a></li>
     <li><a class="dropdown-item" href="{{ url_for('view') }}">View Entries</a></li>
 </ul>
 </body>
-</html>
+{% endblock %}
