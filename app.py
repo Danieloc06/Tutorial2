@@ -1,7 +1,7 @@
 import os
 import requests
 import time
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from dotenv import load_dotenv
 import psycopg
 from psycopg.rows import dict_row
@@ -15,7 +15,7 @@ def get_conn():
 
 # 1. Initialize the Flask app
 app = Flask(__name__)
-
+app.secret_key = os.getenv("SECRET_KEY")
 API_KEY = os.getenv("API_KEY")
 
 
@@ -32,17 +32,20 @@ def index():
 @app.route('/search')
 def search():
     title = request.args.get('t')
-    response = requests.get(f"http://www.omdbapi.com/?t={title}&apikey={API_KEY}")
-    data = response.json()
-
     if not title:
         return {"error": "No title provided"}, 400
+    if movie_exists(title):
+        flash("Movie in Database!", "success")
+        return render_template("index.html")
+    response = requests.get(f"http://www.omdbapi.com/?t={title}&apikey={API_KEY}")
+    data = response.json()
     if data.get("Response") == "True":
         insert_movie(data)
+        flash("Movie added successfully!", "success")
+    else:
+        flash("Movie not found!", "error")
     return render_template("index.html", content=data)
 
-
-# This part allows you to run it directly from PyCharm
 @app.route("/health")
 def health():
     return jsonify({"status": "ok"})
@@ -111,6 +114,14 @@ def insert_movie(data):
     conn.commit()
     conn.close()
 
+@app.route('/delete_movie/<int:movie_id>', methods=['POST'])
+def delete_movie(movie_id):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM unnormalised_movie WHERE id = %s", (movie_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('view'))
 @app.route('/view/')
 def view():
     conn = get_conn()
@@ -120,5 +131,13 @@ def view():
     conn.close()
     return render_template('view.html', unnormalised_movie=unnormalised_movie)
 
+def movie_exists(title):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM unnormalised_movie WHERE movie_title = %s", (title,))
+        return cur.fetchone() is not None
+    finally:
+        conn.close()
 if __name__ == "__main__":
     app.run(debug=True)
