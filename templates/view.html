@@ -1,27 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Search Page{% endblock %}
 {% block content %}
-<body>
-<h1>View Movie</h1>
+<h1 class="header">View Movie</h1>
+<hr style="border: 2px solid grey;">
 
 {% for movie in unnormalised_movie %}
 <div class="post">
-    <h2>Title: {{ movie['movie_title'] }}</h2>
-    <p>ID: {{ movie['id'] }}</p>
-    <p>Ratings: {{ movie['movie_rated'] }}</p>
-    <p>Release Date: {{ movie['movie_released'] }}</p>
-    <p>Runtime: {{ movie['movie_runtime'] }}</p>
-    <p>Genre: {{ movie['movie_genres'] }}</p>
-    <p>Director: {{ movie['movie_directors'] }}</p>
-    <p>Actors: {{ movie['movie_actors'] }}</p>
-    <p>Plot: {{ movie['movie_plot'] }}</p>
-    <p>Poster Link: {{ movie['movie_poster'] }}</p>
-    <p>IMDB Rating: {{ movie['movie_imdb_rating'] }}</p>
-    <p>IMDB ID: {{ movie['movie_imdb_id'] }}</p>
-    <p>Box Office Revenue: {{ movie['movie_box_office'] }}</p>
-    <p>Writers: {{ movie['movie_writers'] }}</p>
-    <p>Database Entry Timestamp: {{ movie['created_at'] }}</p>
+    <h2><span class="label">Title:</span> {{ movie['movie_title'] }}</h2>
+    <p><span class="label">ID:</span> {{ movie['id'] }}</p>
+    <p><span class="label">Ratings:</span> {{ movie['movie_rated'] }}</p>
+    <p><span class="label">Release Date:</span> {{ movie['movie_released'] }}</p>
+    <p><span class="label">Runtime:</span> {{ movie['movie_runtime'] }}</p>
+    <p><span class="label">Genre:</span> {{ movie['movie_genres'] }}</p>
+    <p><span class="label">Director:</span> {{ movie['movie_directors'] }}</p>
+    <p><span class="label">Actors:</span> {{ movie['movie_actors'] }}</p>
+    <p><span class="label">Plot:</span> {{ movie['movie_plot'] }}</p>
+    <p><span class="label">Poster Link:</span> {{ movie['movie_poster'] }}</p>
+    <p><span class="label">IMDB Rating:</span> {{ movie['movie_imdb_rating'] }}</p>
+    <p><span class="label">IMDB ID:</span> {{ movie['movie_imdb_id'] }}</p>
+    <p><span class="label">Box Office Revenue:</span> {{ movie['movie_box_office'] }}</p>
+    <p><span class="label">Writers:</span> {{ movie['movie_writers'] }}</p>
+    <p><span class="label">Database Entry Timestamp:</span> {{ movie['created_at'] }}</p>
 </div>
+    <form action="{{ url_for('delete_movie', movie_id=movie['id']) }}" method="POST">
+    <input type="submit" value="Delete Movie" onclick="return confirm('Are you sure you want to delete this movie from the database?')">
+    </form>
+    <hr>
 {% endfor %}
-</body>
 {% endblock %}

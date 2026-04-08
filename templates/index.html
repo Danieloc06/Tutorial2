@@ -2,7 +2,13 @@
 {% block title %}Search Page{% endblock %}
 {% block content %}
 <body>
-    <h1>Movie Search</h1>
+    <h1 class="header">Movie Search</h1>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% for category, message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    {% endwith %}
+
     <form action="/search" method="get">
         <input type="text" name="t" placeholder="Enter movie name">
         <button type="submit">Search</button>
