@@ -3,7 +3,13 @@
 {% block content %}
 <h1 class="header">View Movie</h1>
 <hr style="border: 2px solid grey;">
-
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 {% for movie in unnormalised_movie %}
 <div class="post">
     <h2><span class="label">Title:</span> {{ movie['movie_title'] }}</h2>
