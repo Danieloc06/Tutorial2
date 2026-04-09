@@ -3,20 +3,24 @@ import requests
 import time
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from dotenv import load_dotenv
+from cache_db import cache, init_cache, save_movies_to_local, load_movies_from_local
 import psycopg
 from psycopg.rows import dict_row
-
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 def get_conn():
-    conn = psycopg.connect(DATABASE_URL, sslmode='require')
-    return conn
+    try:
+        conn = psycopg.connect(DATABASE_URL, sslmode='require')
+        return conn
+    except (psycopg.OperationalError, psycopg.ProgrammingError):
+        return None
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 API_KEY = os.getenv("API_KEY")
-
+init_cache(app)
 
 @app.route('/')
 def home():
@@ -39,8 +43,11 @@ def search():
     response = requests.get(f"http://www.omdbapi.com/?t={title}&apikey={API_KEY}")
     data = response.json()
     if data.get("Response") == "True":
-        insert_movie(data)
-        flash("Movie added successfully!", "success")
+        saved = insert_movie(data)
+        if saved is False:
+            flash("Movie found but could not be saved! database is unavailable.", "partial_success")
+        else:
+            flash("Movie added successfully!", "success")
     else:
         flash("Movie not found!", "error")
     return render_template("index.html", content=data)
@@ -89,54 +96,73 @@ def status():
 
 def insert_movie(data):
     conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO unnormalised_movie 
-        (movie_title, movie_year, movie_rated, movie_released, movie_runtime, movie_genres, movie_directors, movie_writers, movie_actors, movie_plot, movie_poster, movie_imdb_rating, movie_imdb_id, movie_box_office)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """, (
-        data.get("Title"),
-        data.get("Year"),
-        data.get("Rated"),
-        data.get("Released"),
-        data.get("Runtime"),
-        data.get("Genre"),
-        data.get("Director"),
-        data.get("Writer"),
-        data.get("Actors"),
-        data.get("Plot"),
-        data.get("Poster"),
-        data.get("imdbRating"),
-        data.get("imdbID"),
-        data.get("BoxOffice")
-    ))
-    conn.commit()
-    conn.close()
-
+    if conn is None:
+        return False
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO unnormalised_movie 
+                    (movie_title, movie_year, movie_rated, movie_released, movie_runtime, movie_genres, movie_directors, movie_writers, movie_actors, movie_plot, movie_poster, movie_imdb_rating, movie_imdb_id, movie_box_office)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    data.get("Title"),
+                    data.get("Year"),
+                    data.get("Rated"),
+                    data.get("Released"),
+                    data.get("Runtime"),
+                    data.get("Genre"),
+                    data.get("Director"),
+                    data.get("Writer"),
+                    data.get("Actors"),
+                    data.get("Plot"),
+                    data.get("Poster"),
+                    data.get("imdbRating"),
+                    data.get("imdbID"),
+                    data.get("BoxOffice")
+                ))
+        cache.delete('movies')
+    except Exception:
+        return False
 @app.route('/delete_movie/<int:movie_id>', methods=['POST'])
 def delete_movie(movie_id):
     conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM unnormalised_movie WHERE id = %s", (movie_id,))
-    conn.commit()
-    conn.close()
+    if conn is None:
+        flash("Database is down! action can not be completed.","error")
+        return redirect(url_for("view"))
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM unnormalised_movie WHERE id = %s", (movie_id,))
+    cache.delete('movies')
     return redirect(url_for('view'))
 @app.route('/view/')
 def view():
+    cached = cache.get('movies')
+    if cached:
+        return render_template("view.html", unnormalised_movie=cached)
     conn = get_conn()
-    cur = conn.cursor(row_factory=dict_row)
-    cur.execute('SELECT * FROM unnormalised_movie')
-    unnormalised_movie = cur.fetchall()
-    conn.close()
+    if conn is None:
+        movies = load_movies_from_local()
+        flash('Database is currently down, backup is available','error')
+        return render_template("view.html", unnormalised_movie=movies)
+    with conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('SELECT * FROM unnormalised_movie')
+            unnormalised_movie = cur.fetchall()
+    cache.set('movies', unnormalised_movie)
+    save_movies_to_local(unnormalised_movie)
     return render_template('view.html', unnormalised_movie=unnormalised_movie)
 
 def movie_exists(title):
     conn = get_conn()
+    if conn is None:
+        return False
     try:
-        cur = conn.cursor()
-        cur.execute("SELECT id FROM unnormalised_movie WHERE movie_title ILIKE %s", (title,))
-        return cur.fetchone() is not None
-    finally:
-        conn.close()
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT id FROM unnormalised_movie WHERE movie_title ILIKE %s", (title,))
+                return cur.fetchone() is not None
+    except Exception:
+        return False
 if __name__ == "__main__":
     app.run(debug=True)
