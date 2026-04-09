@@ -13,7 +13,6 @@ def get_conn():
     conn = psycopg.connect(DATABASE_URL, sslmode='require')
     return conn
 
-# 1. Initialize the Flask app
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 API_KEY = os.getenv("API_KEY")
@@ -135,7 +134,7 @@ def movie_exists(title):
     conn = get_conn()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT id FROM unnormalised_movie WHERE movie_title = %s", (title,))
+        cur.execute("SELECT id FROM unnormalised_movie WHERE movie_title ILIKE %s", (title,))
         return cur.fetchone() is not None
     finally:
         conn.close()

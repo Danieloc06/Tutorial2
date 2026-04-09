@@ -13,5 +13,22 @@
         <input type="text" name="t" placeholder="Enter movie name">
         <button type="submit">Search</button>
     </form>
+    {% if content %}
+    <div class="post">
+    <h2><span class="label">Title:</span> {{ content['Title'] }}</h2>
+    <p><span class="label">Ratings:</span> {{ content['Rated'] }}</p>
+    <p><span class="label">Release Date:</span> {{ content['Released'] }}</p>
+    <p><span class="label">Runtime:</span> {{ content['Runtime'] }}</p>
+    <p><span class="label">Genre:</span> {{ content['Genre'] }}</p>
+    <p><span class="label">Director:</span> {{ content['Director'] }}</p>
+    <p><span class="label">Actors:</span> {{ content['Actors'] }}</p>
+    <p><span class="label">Plot:</span> {{ content['Plot'] }}</p>
+    <p><span class="label">Poster Link:</span> {{ content['Poster'] }}</p>
+    <p><span class="label">IMDB Rating:</span> {{ content['imdbRating'] }}</p>
+    <p><span class="label">IMDB ID:</span> {{ content['imdbID'] }}</p>
+    <p><span class="label">Box Office Revenue:</span> {{ content['BoxOffice'] }}</p>
+    <p><span class="label">Writers:</span> {{ content['Writer'] }}</p>
+    {% endif %}
+    </div>
 {% endblock %}
 </body>
