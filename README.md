@@ -21,14 +21,20 @@ built using Flask that aggregates data from multiple
 sources and exposes a consolidated API and optional
 web interface.
 
-### How the Program Works
-1. Request Flow
-2. Data Integration Process
-3. Data Processing & Aggregation
-4. API Response
-5. Configuration Handling
-6. Resilience & Error Handling
-7. Observability & Logging
-8. Deployment Workflow
+### the Program Works
+
+When a request is sent to the application:
+
+## Technology Stack
+
+- **Backend**: Python 3.11+, Flask
+- **Database**: Supabase
+- **Frontend**: HTML
 
 
+
+**Submitted for Assessment: IS2208 Module**
+
+**Submission Date**: 7th December 2025
+
+**Student**: Mark Dominic O Sullivan (124369726)
