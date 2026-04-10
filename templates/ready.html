@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Status Page{% endblock %}
+{% block content %}
+<h1 class="header">Database Readiness</h1>
+  <ul>
+    <li><strong>Status:</strong> {{ status }}</li>
+    {% if error is defined %}
+        <li><strong>Error:</strong> {{ error }}</li>
+    {% endif %}
+  </ul>
+{% endblock %}

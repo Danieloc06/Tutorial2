@@ -52,11 +52,10 @@ def search():
         flash("Movie not found!", "error")
     return render_template("index.html", content=data)
 
-@app.route("/health")
 def health():
     return jsonify({"status": "ok"})
 
-@app.route("/ready")
+@app.route('/ready')
 def ready():
     try:
         with get_conn() as conn:
@@ -64,13 +63,10 @@ def ready():
                 cur.execute("SELECT 1;")
                 cur.fetchone()
 
-        return jsonify({"status": "ready"}), 200
+        return render_template('ready.html',status="ready"), 200
 
     except Exception as e:
-        return jsonify({
-            "status": "unready",
-            "error": str(e)
-        }), 500
+        return render_template('ready.html',status="unready", error=str(e)), 500
 
 @app.route("/status")
 def status():
@@ -78,7 +74,7 @@ def status():
     try:
         with get_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT COUNT(*) FROM movies")
+                cur.execute("SELECT COUNT(*) FROM unnormalised_movie")
                 movie_count = cur.fetchone()[0]
 
         db_status = f"connected ({movie_count} movies)"
@@ -86,13 +82,13 @@ def status():
     except Exception:
         db_status = "database unavailable"
 
-    return jsonify({
-        "service": "DeployHub Movie Service",
-        "uptime_seconds": uptime,
-        "database": db_status,
-        "movie_api_configured": API_KEY is not None,
-        "environment": os.getenv("ENVIRONMENT", "development"),
-    })
+    return render_template("status.html",
+                           service="DeployHub Movie Service",
+                           uptime_seconds=uptime,
+                           database=db_status,
+                           movie_api_configured=API_KEY is not None,
+                           environment=os.getenv("ENVIRONMENT", "development")
+                           )
 
 def insert_movie(data):
     conn = get_conn()

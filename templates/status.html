@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Status Page{% endblock %}
+{% block content %}
+<h1 class="header">Service Status</h1>
+  <ul>
+    <li><strong>Service:</strong> {{ service }}</li>
+    <li><strong>Uptime:</strong> {{ uptime_seconds }}s</li>
+    <li><strong>Database:</strong> {{ database }}</li>
+    <li><strong>API Configured:</strong> {{ movie_api_configured }}</li>
+    <li><strong>Environment:</strong> {{ environment }}</li>
+  </ul>
+{% endblock %}
