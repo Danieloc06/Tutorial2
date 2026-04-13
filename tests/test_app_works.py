@@ -18,3 +18,20 @@ def test_expected_fields_are_going_to_be_returned_successfully(client):
     assert 'database' in response.json
     assert 'movie_api_configured' in response.json
     assert 'environment' in response.json
+
+
+def test_home_page_loads(client):
+    response = client.get('/')
+    assert response.status_code == 200
+
+def test_index_page_loads(client):
+    response = client.get('/index/')
+    assert response.status_code == 200
+
+def test_view_page_loads(client):
+    response = client.get('/view/')
+    assert response.status_code == 200
+
+def test_status_page_loads(client):
+    response = client.get('/status')
+    assert response.status_code == 200
