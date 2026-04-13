@@ -7,12 +7,16 @@ University College Cork
 **- Team:** Group 23
 
 **- Team Members:**
-- Daniel O'Conor
-- Mark O'Sullivan
-- Ted McGrath
-- Kevin Murphy 
+- Daniel O'Conor - 124465772
+- Mark O'Sullivan - 124369726
+- Kevin Murphy - 124486342
+- Ted McGrath - 124482326
 
-**- Repository:**  GitHub URL
+
+## Links
+- **GitHub Repository:** https://github.com/Danieloc06/Tutorial2
+- **Live Application:** http://127.0.0.1:5000/
+- **Microsoft Planner:** https://planner.cloud.microsoft/webui/plan/gFNTTN5sYEym-QVFN-vAcpYABSQ5/view/board?tid=46fe5ca5-866f-4e42-92e9-ed8786245545
 
 ### System Description
 
@@ -21,20 +25,41 @@ built using Flask that aggregates data from multiple
 sources and exposes a consolidated API and optional
 web interface.
 
-### the Program Works
-
-When a request is sent to the application:
-
 ## Technology Stack
 
 - **Backend**: Python 3.11+, Flask
 - **Database**: Supabase
 - **Frontend**: HTML
+- **External API**: Movie API
+- **Testing**: pytest
+
+### Steps
+1. **Run the application**
+
+   - Run app.py
+
+2. **Access the application**
+   - Open your browser and navigate to: http://127.0.0.1:5000
+
+## API Endpoints
+- Endpoint: /         -        Search Movie: http://127.0.0.1:5000/index/
+- Endpoint: /view/    -        View Entry of Movies: http://127.0.0.1:5000/view/
+- Endpoint: /status   -       View Database Status: http://127.0.0.1:5000/status
+- Endpoint: /ready    -        View Database Readiness: http://127.0.0.1:5000/ready
+
+## Run tests:
+
+- run tests/test_app_works.py
+- run tests/test_app_works_correctly.py 
+- run tests/test_search.py 
 
 
+## Tests
+- **test_app_works.py**: 2 tests 
+- **test_app_works_correctly.py**: 2 tests
+- **test_search.py**: 1 test 
 
-**Submitted for Assessment: IS2208 Module**
+## References and AI Statements
 
-**Submission Date**: 7th December 2025
-
-**Student**: Mark Dominic O Sullivan (124369726)
+**Submitted for Assessment: IS2209 Module**
+**Submission Date**: 13th April 2026
