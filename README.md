@@ -61,12 +61,14 @@ web interface.
 - run tests/test_app_works.py
 - run tests/test_app_works_correctly.py 
 - run tests/test_search.py 
+- run tests/test_delete.py
 
 
 ## Tests
 - **test_app_works.py**: 6 tests 
 - **test_app_works_correctly.py**: 2 tests
 - **test_search.py**: 2 tests
+- **test_delete.py**: 1 test
 
 ## References 
 - Geeks for geeks
