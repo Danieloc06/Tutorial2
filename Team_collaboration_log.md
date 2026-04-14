@@ -1,5 +1,10 @@
 # Team Collaboration Log
 
+## Roles
+- Daniel O'Conor - Developer 
+- Mark O'Sullivan - Testing and Documentation
+- Ted McGrath - Leader
+- Kevin Murphy - Testing and Documentation
 ## Ceremonies
 We held regular team meetings throughout the project to plan and review progress.
 
